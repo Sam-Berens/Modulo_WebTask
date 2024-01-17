@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test</title>
+<script src="./Rng.js"></script>
+<script src="./Shuffle.js"></script>
+
+<script>
+function OnBodyLoad(){
+	SeedRng().then(function(){
+		document.getElementById('DrawArea0').innerHTML = Rng().toString();
+		document.getElementById('DrawArea1').innerHTML = Shuffle([...Array(7).keys()]).toString();
+	}).then(function(){
+		console.log('Hello');
+	});
+}
+</script>
+</head>
+
+<body onload="OnBodyLoad();">
+<h3>A random number</h3><div id='DrawArea0'></div>
+<br /><br />
+<h3>A random permutation</h3><div id='DrawArea1'></div>
+</body>
+
+</html>
