@@ -9,6 +9,22 @@ function FieldIdx2ImgName(FieldIdx) {
 	return ImgName;
 }
 
+async function GetTrainHist() {
+
+	var DataToSend = {};
+	DataToSend.SubjectId = SubjectId;
+
+	//Send data to php script
+	var P1 = await fetch('./GetTrainHist.php', {
+		method: 'post',
+		headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+		body: JSON.stringify(DataToSend)
+	});
+
+	var History = await P1.json();
+	return History;
+}
+
 // Function to construct the TimelineVars
 function GetTimelineVars() {
 	var TV = [];
