@@ -15,7 +15,7 @@ $Input = json_decode(file_get_contents('php://input'), true);
 
 // Get all the inputs:
 $SubjectId = $Input['SubjectId'];
-mysqli_real_escape_string($Conn,$SubjectId);
+$SubjectId = mysqli_real_escape_string($Conn,$SubjectId);
 
 $SessionId = $Input['SessionId'];
 $SessionId = mysqli_real_escape_string($Conn,$SessionId);
