@@ -9,6 +9,7 @@ function FieldIdx2ImgName(FieldIdx) {
 	return ImgName;
 }
 
+// Function to get the training history (i.e. the number of presentations for each problem)
 async function GetTrainHist() {
 
 	var DataToSend = {};
@@ -21,8 +22,7 @@ async function GetTrainHist() {
 		body: JSON.stringify(DataToSend)
 	});
 
-	var History = await P1.json();
-	return History;
+	TrainHistory = await P1.json();
 }
 
 // Function to construct the TimelineVars
@@ -39,6 +39,7 @@ function GetTimelineVars() {
 		var Fn_B = FieldIdx2ImgName(FieldIdx_B);
 		var Fn_C = FieldIdx2ImgName(FieldIdx_C);
 		var Fn_S = Sym[OppIdx];
+		var Ptarget = 3 / ((Sup.length * 3) + Uns.length); // This will show all Sup pairs 3x more often as Uns pairs;
 		var TrialObj = {
 			TrialType: 'Sup',
 			OppId: OppIdx,
@@ -49,7 +50,8 @@ function GetTimelineVars() {
 			Fn_S: Fn_S,
 			Fn_A: Fn_A,
 			Fn_B: Fn_B,
-			Fn_C: Fn_C
+			Fn_C: Fn_C,
+			Ptarget: Ptarget
 		};
 		TV.push(TrialObj);
 	}
@@ -64,6 +66,7 @@ function GetTimelineVars() {
 		var Fn_B = FieldIdx2ImgName(FieldIdx_B);
 		var Fn_C = FieldIdx2ImgName(FieldIdx_C);
 		var Fn_S = Sym[OppIdx];
+		var Ptarget = 1 / ((Sup.length * 3) + Uns.length); // This will show all Uns pairs 3x less often as Sup pairs;
 		var TrialObj = {
 			TrialType: 'Uns',
 			OppId: OppIdx,
@@ -74,7 +77,8 @@ function GetTimelineVars() {
 			Fn_S: Fn_S,
 			Fn_A: Fn_A,
 			Fn_B: Fn_B,
-			Fn_C: Fn_C
+			Fn_C: Fn_C,
+			Ptarget: Ptarget
 		};
 		TV.push(TrialObj);
 	}
@@ -84,10 +88,10 @@ function GetTimelineVars() {
 // This function is called in the Response trial object stimulus function
 function GetFullQuestion() {
 	var HtmlString = '<table style="width:33%;text-align:center;border:1px solid white;" align="center"><tbody><tr>' +
-	'<td><img src="' + jsPsych.timelineVariable('Fn_S', true) + '" width="100px">' + '</td>' +
-	'<td><img src="' + jsPsych.timelineVariable('Fn_A', true) + '" width="100px"></td>' +
-	'<td><img src="' + jsPsych.timelineVariable('Fn_B', true) + '" width="100px"></td>' +
-	'</tr></tbody></table>';
+		'<td><img src="' + CurrentQuestion.Fn_S + '" width="100px">' + '</td>' +
+		'<td><img src="' + CurrentQuestion.Fn_A + '" width="100px"></td>' +
+		'<td><img src="' + CurrentQuestion.Fn_B + '" width="100px"></td>' +
+		'</tr></tbody></table>';
 	return HtmlString;
 }
 
@@ -97,9 +101,9 @@ function GetArrayOfResponseTags() {
 	for (var FieldIdx = 0; FieldIdx < 7; FieldIdx++) {
 		var ImgName = FieldIdx2ImgName(FieldIdx);
 		var ResponseTag =
-		'<img src="' + ImgName +
-		'" width="150px" id="Resp_' + FieldIdx.toString().padStart(2, '0') +
-		'" onclick="javascript:ImgClicked(this.id)">';
+			'<img src="' + ImgName +
+			'" width="150px" id="Resp_' + FieldIdx.toString().padStart(2, '0') +
+			'" onclick="javascript:ImgClicked(this.id)">';
 		AORT.push(ResponseTag);
 	}
 	return AORT;
@@ -125,7 +129,7 @@ function GetSparkOptions() {
 	HtmlString = HtmlString.replace(',', '</td><td>');
 	// Close the table:
 	HtmlString = HtmlString + '</td></tr></tbody></table>';
-	return HtmlString; 
+	return HtmlString;
 }
 
 // Give all but one of the FieldIdxs a black boarder
@@ -141,7 +145,7 @@ function BlackenBoarders(FIdxR) {
 	});
 	// Loop over those FieldIdxs:
 	for (var i = 0; i < Idxs.length; i++) {
-		var Ids2change = 'Resp_' + Idxs[i].toString().padStart(2,'0');
+		var Ids2change = 'Resp_' + Idxs[i].toString().padStart(2, '0');
 		document.getElementById(Ids2change).style = "border: 1px solid #000000;border-radius: 25px;width: 148px";
 	}
 }
@@ -152,33 +156,33 @@ async function ImgClicked(Id) {
 
 	// If we are not accepting responses, return the function i.e., don't do anything further)
 	if (!AcceptResponse) { return; }
-	
+
 	// Increment the attempt number:
 	AttemptNum = AttemptNum + 1;
-	
+
 	// Specify the TrialType, FieldId, Correct, and RT variables
-	var TrialType = jsPsych.timelineVariable('TrialType', true);
+	var TrialType = CurrentQuestion.TrialType;
 	var FieldIdx_Response = parseInt(Id.slice(-2));
-	var Correct = FieldIdx_Response === jsPsych.timelineVariable('FieldIdx_C', true);
+	var Correct = FieldIdx_Response === CurrentQuestion.FieldIdx_C;
 	var RT = jsPsych.getTotalTime() - StartTime_ResponsePrompt;
-	
+
 	// Do not provide feedback, or save any data, if the response came more than 2 mins after the response window started
 	if (RT > (2 * 60 * 1000)) {
 		window.location.reload();
 		return;
 	}
-	
+
 	// Save the data:
 	var DataToSend = {};
 	DataToSend.SubjectId = SubjectId;
 	DataToSend.SessionId = SessionId;
 	DataToSend.TrialId = TrialId;
-	DataToSend.PairId = jsPsych.timelineVariable('PairId', true);
+	DataToSend.PairId = CurrentQuestion.PairId;
 	DataToSend.TrialType = TrialType;
-	DataToSend.OppId = jsPsych.timelineVariable('OppId', true);
-	DataToSend.FieldIdx_A = jsPsych.timelineVariable('FieldIdx_A', true);
-	DataToSend.FieldIdx_B = jsPsych.timelineVariable('FieldIdx_B', true);
-	DataToSend.FieldIdx_C = jsPsych.timelineVariable('FieldIdx_C', true);
+	DataToSend.OppId = CurrentQuestion.OppId;
+	DataToSend.FieldIdx_A = CurrentQuestion.FieldIdx_A;
+	DataToSend.FieldIdx_B = CurrentQuestion.FieldIdx_B;
+	DataToSend.FieldIdx_C = CurrentQuestion.FieldIdx_C;
 	DataToSend.AttemptNum = AttemptNum;
 	DataToSend.FieldIdx_R = FieldIdx_Response;
 	if (Correct) {
@@ -187,49 +191,65 @@ async function ImgClicked(Id) {
 		DataToSend.Correct = 0;
 	}
 	DataToSend.RT = RT;
-	
+
 	//Send data to php script
 	fetch('./WriteTaskIO.php', {
 		method: 'post',
 		headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
 		body: JSON.stringify(DataToSend)
 	});
-	
+
 	// Colour the boarders and end the trial (if we need to):
 	if (TrialType === 'Sup') {
 		if (!Correct) {
 			document.getElementById(Id).style = "border: 1px solid #ff0000;border-radius: 25px;width: 148px";
-			
+
 		} else {
 			// Set AcceptResponse to be false:
 			AcceptResponse = false;
-			
+
 			// Set the current (correct) response to have a green border:
 			document.getElementById(Id).style = "border: 1px solid #00ff00;border-radius: 25px;width: 148px";
-			
+
 			// Set all other responses to have a black border:
 			BlackenBoarders(FieldIdx_Response);
-			
+
 			// Sleep for 1 second:
 			await Sleep(1000);
-			
+
 			// End the trial:
 			jsPsych.finishTrial();
 		}
 	} else {
 		// Set AcceptResponse to be false:
 		AcceptResponse = false;
-		
+
 		// Set the current (correct) response to have a green border:
 		document.getElementById(Id).style = "border: 1px solid #0000ff;border-radius: 25px;width: 148px";
-		
+
 		// Set all other responses to have a black border:
 		BlackenBoarders(FieldIdx_Response);
-		
+
 		// Sleep for 1 second:
 		await Sleep(1000);
-		
+
 		// End the trial:
 		jsPsych.finishTrial();
 	}
+}
+
+// Called at the very end of the Promise chain to run jsPsych
+function RunTrailLoop() {
+	var TrialLoop = {
+		timeline: [PreTrialOps, Fixation, Show_S, Show_A, ICI, Show_B, ResponsePrompt],
+		loop_function: function () { return true; }
+	};
+	jsPsych.run([PreloadImgs, EnterFullscreen, TrialLoop, ExitFullscreen]);
+}
+
+// Specify the Promise chain
+async function PromiseChain() {
+	await GetTrainHist();
+	await SeedRng();
+	RunTrailLoop();
 }

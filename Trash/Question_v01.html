@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Spark Training</title>
+
+
+<!-- Get jQuery -->
+<script src="./Assets/jquery.min.js"></script>
+
+<!-- Set the favicon logo -->
+<link rel="icon" href="./Logo.png" type="image/x-icon" />
+
+<!-- Unpack the main JSpsych module -->
+<script src="https://unpkg.com/jspsych@7.3.3"></script>
+
+<!-- JSpsych dependency to fullscreen -->
+<script src="https://unpkg.com/@jspsych/plugin-fullscreen@1.1.2"></script>
+
+<!-- JSpsych dependency for HTML button response -->
+<script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.2"></script>
+<script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.2"></script>
+<!-- JSpsych dependency for preloading -->
+<script src="https://unpkg.com/@jspsych/plugin-preload@1.1.2"></script>
+
+<!-- JSpsych dependency for styling -->
+<link rel="stylesheet" href="https://unpkg.com/jspsych@7.3.3/css/jspsych.css" />
+
+
+<!-- Dynamic border + black background -->
+<style>
+body{background-color:black;}
+[id^=Resp]:hover {border: 1px solid #00ffff;border-radius: 25px;width: 148px}
+</style>
+
+<script src="./RandomTools/Rng.js"></script>
+<script src="./RandomTools/Shuffle.js"></script>
+<script src="./PairAssignments.js"></script> 
+
+<!-- Get participant IDs passed in from URL -->
+<script src="./Assets/GetPpantIds.js"></script>  <!--i need to have an index page which is where the ppid gets generated!-->
+
+<!-- Exclusion check -->
+<script src= "./Assets/ExclusionCheck.js"></script>
+
+<!-- Get jQuery -->
+<script src= "./Assets/jquery.min.js"></script>
+
+<!-- Get DateTime_Start and ClientTimeZone (and add to TaskIO)  -->
+<script src= "./Assets/SetDateTime.js"></script>
+
+<!-- Main script block -->
+<script>
+
+// Function to convert FeildIdx to filenames
+var FeildPermutation = [4,2,3,1,0,5,6];
+function FeildIdx2ImgName(FeildIdx) {
+	var ImgName = './TestShapes/i'+FeildPermutation.indexOf(FeildIdx).toString().padStart(2,'0')+'.jpg';
+	return ImgName;
+}
+
+// Construct the ArrayOfResponseTags
+var ArrayOfResponseTags = [];
+function PopulateArrayOfResponseTags() {
+	for (let FeildIdx = 0; FeildIdx < 7; FeildIdx++) {
+		var ImgName = FeildIdx2ImgName(FeildIdx);
+		var ResponseTag = 
+			'<img src="' + ImgName + 
+			'" width="150px" id="Resp_' + FeildIdx.toString().padStart(2,'0') + 
+			'" onclick="javascript:ImgClicked(this.id)">';
+		ArrayOfResponseTags.push(ResponseTag);
+	}
+}
+PopulateArrayOfResponseTags();
+
+// Construct the TimelineVars
+var TimelineVars = [];
+function PopulateTimelineVars() {
+	for (let i = 0; i < Sup.length; i++) {
+		var PairId = Sup[i];
+		var FeildIdx_A = PairId % 7;
+		var FeildIdx_B = Math.floor(PairId/7);
+		var FeildIdx_C = (FeildIdx_A * FeildIdx_B) % 7 ;
+		var Fn_A = FeildIdx2ImgName(FeildIdx_A);
+		var Fn_B = FeildIdx2ImgName(FeildIdx_B);
+		var Fn_C = FeildIdx2ImgName(FeildIdx_C);
+		var TrialObj = {
+			FeildIdx_A: FeildIdx_A,
+			FeildIdx_B: FeildIdx_B,
+			FeildIdx_C: FeildIdx_C,
+			Fn_A: Fn_A,
+			Fn_B: Fn_B,
+			Fn_C: Fn_C};
+		TimelineVars.push(TrialObj);
+	}
+}
+PopulateTimelineVars();
+
+// I have contructed (futher down within the response trial) a function called GetQuestion to 
+//use to call filenames on the response page to present the question:
+
+function GetFullQuestion() {
+	//'<style type="text/css"> .tg  '+
+	//'{border-collapse:collapse;border-color:white;border-spacing:0;border-style:solid;border-width:1px;margin:0px auto;} '+
+	//'tg td{border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:5px;overflow:visible; padding:10px 5px;word-break:normal;}'+
+	//' .tg th{border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:9px;font-weight:normal; '+
+	//'overflow:visible;padding:10px 5px;word-break:normal;} .tg .tg-ofx2{ border-color:#efefef; color:#ffffff; text-align:left;vertical-align:top} '+
+	//'</style> <table class="tg"> <thead> <tr> <td class="tg-ofx2">  "symbol"   </td> <td class="tg-ofx2" > '+
+	//'<img src="'+ GetQuestion() +'" width="400px"> </td> <td class="tg-ofx2"> <img src= "' + GetQuestion(true) 
+	//+ '" width="100px"> </td></tr></thead></table></h1>' + HtmlString
+	var HtmlString = '<table style="width:95%;text-align:center;border:1px solid white;"><tbody><tr><td>'+
+		'<text color="white">Symbol</text>'+'</td>'+
+		'<td><img src="'+jsPsych.timelineVariable('Fn_A',true)+'" width="100px"></td>'+
+		'<td><img src="'+jsPsych.timelineVariable('Fn_B',true)+'" width="100px"></td>'+
+		'</tr></tbody></table>';
+	return HtmlString;
+}
+
+// This is a stimulus function that is directly called by jsPsych ...
+// ... having been referenced in the Response trial object
+function GetSparkOptions(){
+	var HtmlString = Shuffle(ArrayOfResponseTags).toString(); // Get the shuffled array and turn into string;
+	HtmlString =  '<table style="width:95%;text-align:center;"> <tbody><tr> <td>' + HtmlString // Get the suffled array and turn into string;
+	HtmlString = HtmlString.replace(',' , '</td> <td colspan="2">'); // Column seperators between images;  style = "align=centre;"
+	HtmlString = HtmlString.replace(',' , '</td><td>'); // Column seperators between images;
+	HtmlString = HtmlString.replace(',' , '</td></tr><tr><td>'); // Column seperator and then new row ?;
+	HtmlString = HtmlString.replace(',' , '</td><td>'); // new row and then column seperators between images;
+	HtmlString = HtmlString.replace(',' , '</td><td>'); // Column seperators between images;
+	HtmlString = HtmlString.replace(',' , '</td><td>'); // Column seperators between images
+	HtmlString = HtmlString + '</td></tr></tbody></table>'; // Close the table. BELOW I AM ADDING THE SECOND TABLE WHICH IS THE QUESTION BAR AT THE TOP
+	return HtmlString;
+}
+
+// Import the main jsPsych object
+var jsPsych = initJsPsych({
+	on_finish: function() {
+		jsPsych.data.displayData();
+	}
+});
+
+function ImgClicked(Id) {
+	var FeildIdx_Response = parseInt(Id.slice(-2));
+	var Correct = FeildIdx_Response === jsPsych.timelineVariable('FeildIdx_C',true);
+	var RT = jsPsych.getTotalTime() - StartTime_ResponsePrompt;
+	console.log(Correct,RT);
+	
+	if (!Correct) {
+		document.getElementById(Id).style = "border: 1px solid #ff0000;border-radius: 25px;width: 148px";
+	} else {
+		document.getElementById(Id).style = "border: 1px solid #00ff00;border-radius: 25px;width: 148px";
+	}
+}
+
+// from this we extract the two sub arrays, first response tags:
+
+
+
+// Preload jsPsych object
+var PreloadImgs = {
+    type: jsPsychPreload,
+    images: [
+    './TestShapes/i00.jpg',
+    './TestShapes/i01.jpg',
+    './TestShapes/i02.jpg',
+    './TestShapes/i03.jpg',
+    './TestShapes/i04.jpg',
+    './TestShapes/i05.jpg',
+    './TestShapes/i06.jpg'
+    ]
+};
+
+// the following variables are either going into the running order at the very end or the Trial Loop
+// Specifiy the EnterFullscreen event
+var EnterFullscreen = {
+	type: jsPsychFullscreen,
+	message: '<p style="color:white;">The task is ready to begin.</p><p style="color:white;">Please click the button below to continue.</p>',
+	fullscreen_mode: true,
+	delay_after: 1000,
+	on_finish: function() {EnforceUnfocus = true;}
+ };
+
+// Specifiy the ExitFullscreen event
+var ExitFullscreen = {
+	type: jsPsychFullscreen,
+	fullscreen_mode: false,
+	on_finish: function() {EnforceUnfocus = false;}
+ };
+
+// Specifiy the Fixation event
+var Fixation = {
+	type: jsPsychHtmlButtonResponse,
+	stimulus: '<p><font color="#ffffff" size="30px">+</font></p>',
+	choices: [],
+	prompt: "",
+	trial_duration: 1000
+};
+
+// Specifiy the Inter-cue-iterval event
+var ICI = {
+	type: jsPsychHtmlButtonResponse,
+	stimulus: '<p><font color="#ffffff" size="30px">+</font></p>',
+	choices: [],
+	prompt: "",
+	trial_duration: 200
+};
+
+// Trial object that presents the A cue
+var Show_A = {
+	type: jsPsychHtmlButtonResponse,
+	stimulus: function() {
+		var FeildIdx = jsPsych.timelineVariable('FeildIdx_A');
+		var Fn = jsPsych.timelineVariable('Fn_A');
+		var Tag = '<img src="'+Fn+'" width="400px" id="Cue_'+FeildIdx.toString().padStart(2,'0')+'"';
+		return Tag;
+	},
+	choices: [],
+	prompt: [],
+	trial_duration: 1000
+};
+
+// Trial object that presents the B cue
+var Show_B = {
+	type: jsPsychHtmlButtonResponse,
+	stimulus: function() {
+		var FeildIdx = jsPsych.timelineVariable('FeildIdx_B');
+		var Fn = jsPsych.timelineVariable('Fn_B');
+		var Tag = '<img src="'+Fn+'" width="400px" id="Cue_'+FeildIdx.toString().padStart(2,'0')+'"';
+		return Tag;
+	},
+	choices: [],
+	prompt: [],
+	trial_duration: 1000
+};
+
+var StartTime_ResponsePrompt = NaN;
+var ResponsePrompt = {
+	type: jsPsychHtmlButtonResponse,
+	stimulus: function() {
+		var T0 = GetFullQuestion();
+		var T1 = GetSparkOptions();
+		var T0T1 = T0+'<br /><br />'+T1;
+		return T0T1;
+	},
+    choices: [],
+	prompt: [],
+	trial_duration: null,////////////////////////////////////////////////////////////
+	on_start: function() {
+		StartTime_ResponsePrompt = jsPsych.getTotalTime();
+		}
+};
+
+// Specify the Response Feedback Timeline
+//var TrialLoop = {
+//	timeline: [ResponsePrompt,Feedback]
+//};
+
+//this bit specifies the trial loop and also makes jspych wait for the seed before running everything        
+// for the trial 2,3 and 5 it takes first line of vArrayOfQs and say stimulus is timelineVaribale where its the value of A, the value of B, and then the value of C
+
+//we make array of Qs which we're about to push the participants individual question allocation into along with the file names from ArrayofCueTags
+
+SeedRng().then(function() {
+	//Shuffle(TimelineVars);
+
+	// specify the Trial structure ( qA, qB, SparkOptions page)
+	var TrialLoop = {
+		timeline: [Fixation,Show_A,ICI,Show_B,ResponsePrompt],
+		timeline_variables: TimelineVars,
+		randomize_order: true
+	};
+	
+	
+	
+	jsPsych.run([PreloadImgs,EnterFullscreen,TrialLoop,ExitFullscreen]);
+});
+
+</script>
+</head>
+<body>
+</body>
+
+<!--- 
+
+
+// master array of sparks
+var ArrayOfImgs = [
+	{FeildId:'A',CueTag:'<img src="./TestShapes/A.jpg" width="400px" id="yA">', ResponseTag: '<img src="./TestShapes/A.jpg" width="280px" id="xA" onclick="javascript:ImgClicked(this.id)">'},
+	{FeildId:'B',CueTag:'<img src="./TestShapes/B.jpg" width="400px" id="yB">', ResponseTag: '<img src="./TestShapes/B.jpg" width="280px" id="xB" onclick="javascript:ImgClicked(this.id)">'},
+	{FeildId:'C',CueTag:'<img src="./TestShapes/C.jpg" width="400px" id="yC">', ResponseTag: '<img src="./TestShapes/C.jpg" width="280px" id="xC" onclick="javascript:ImgClicked(this.id)">'},
+	{FeildId:'D',CueTag:'<img src="./TestShapes/D.jpg" width="400px" id="yD">', ResponseTag: '<img src="./TestShapes/D.jpg" width="280px" id="xD" onclick="javascript:ImgClicked(this.id)">'},
+	{FeildId:'E',CueTag:'<img src="./TestShapes/E.jpg" width="400px" id="yE">', ResponseTag: '<img src="./TestShapes/E.jpg" width="280px" id="xE" onclick="javascript:ImgClicked(this.id)">'},
+	{FeildId:'F',CueTag:'<img src="./TestShapes/F.jpg" width="400px" id="yF">', ResponseTag: '<img src="./TestShapes/F.jpg" width="280px" id="xF" onclick="javascript:ImgClicked(this.id)">'},
+	{FeildId:'G',CueTag:'<img src="./TestShapes/G.jpg" width="400px" id="yG">', ResponseTag: '<img src="./TestShapes/G.jpg" width="280px" id="xG" onclick="javascript:ImgClicked(this.id)">'}
+];
+
+ 
+
+// now we extract the cue tags from the master array and make the question array:
+var ArrayOfCueTags = ArrayOfImgs.map(function(obj){
+	return obj.CueTag;
+});
+
+
+
+var ArrayOfResponseTags = ArrayOfImgs.map(function(obj){
+	return obj.ResponseTag;
+});
+
+
+// Specify the Feedback event
+var Feedback = {
+	
+	type: jsPsychHtmlButtonResponse,
+	
+	// Set the feedback to display   
+	stimulus: function() {
+		if(ResponseMade) {
+			if(Correct){
+				return '<p style="vertical-align:middle; margin: 0px 5px 30px; color:#00ff00; font-size:120px">&#10003;</p>';
+			} else {
+				return '<p style="vertical-align:middle; margin: 0px 5px 30px; color:#ff0000; font-size:120px">&#10060;</p>';
+			}
+		} else {
+			return '<p style="vertical-align:middle;color:#ff0000;font-size:30px">Please try to respond on time!</p>';
+		}
+	},
+	
+	// Set the choices and prompt fields to be empty (we don't use them)
+	choices: [],
+	prompt: "",
+    
+	// Set the feedback duration (depends on whether a response was made)
+	trial_duration: function() {
+		if (ResponseMade) {
+			return 3000;
+		} else {
+			return 5000;
+		}
+	}
+};
+--->
+</html>

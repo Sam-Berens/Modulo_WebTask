@@ -43,153 +43,19 @@
 	<!-- Get DateTime_Start and ClientTimeZone (and add to TaskIO) -->
 	<script src="./Assets/SetDateTime.js"></script>
 
+	<!-- Exclude if using Edge -->
+	<script src="./ExclusionCheck.js"></script>
+
 	<script src="./RandomTools/Rng.js"></script>
 	<script src="./RandomTools/Shuffle.js"></script>
 	<script src="./PairAssignments.js"></script>
 	<script src="./FunctionSpec.js"></script>
+	<script src="./GlobalVars.js"></script>
+	<script src="./ObjectSpec.js"></script>
 
 	<!-- Main script block -->
 	<script>
-
-		var FieldPermutation = [4, 2, 3, 1, 0, 5, 6];
-		var SessionId = 78;
-		var ArrayOfResponseTags = GetArrayOfResponseTags();
-		var TimelineVars = GetTimelineVars();
-
-		// Import the main jsPsych object
-		var jsPsych = initJsPsych();
-
-		// Preload jsPsych object
-		var PreloadImgs = {
-			type: jsPsychPreload,
-			images: [
-				'./TestShapes/i00.jpg',
-				'./TestShapes/i01.jpg',
-				'./TestShapes/i02.jpg',
-				'./TestShapes/i03.jpg',
-				'./TestShapes/i04.jpg',
-				'./TestShapes/i05.jpg',
-				'./TestShapes/i06.jpg',
-				'./Imgs/S0.png',
-				'./Imgs/S0.png'
-			]
-		};
-
-		// Specifiy the EnterFullscreen event
-		var EnterFullscreen = {
-			type: jsPsychFullscreen,
-			message: '<p style="color:white;">The task is ready to begin.</p><p style="color:white;">Please click the button below to continue.</p>',
-			fullscreen_mode: true,
-			delay_after: 1000,
-			on_finish: function () { EnforceUnfocus = true; }
-		};
-
-		// Specifiy the ExitFullscreen event
-		var ExitFullscreen = {
-			type: jsPsychFullscreen,
-			fullscreen_mode: false,
-			on_finish: function () { EnforceUnfocus = false; }
-		};
-
-		// Set some gloabl variables:
-		var TrialId = -1;
-		var AttemptNum = -1;
-		var AcceptResponse = true;
-		var PreTrialOps = {
-			type: jsPsychCallFunction,
-			func: function () {
-				TrialId = TrialId + 1;
-				AttemptNum = -1;
-				AcceptResponse = true;
-			}
-		};
-
-		// Specifiy the Fixation event
-		var Fixation = {
-			type: jsPsychHtmlButtonResponse,
-			stimulus: '<p><font color="#ffffff" size="30px">+</font></p>',
-			choices: [],
-			prompt: "",
-			trial_duration: 1000
-		};
-
-		// Trial object that presents the trial symbol
-		var Show_S = {
-			type: jsPsychHtmlButtonResponse,
-			stimulus: function () {
-				var Fn = jsPsych.timelineVariable('Fn_S');
-				var Tag = '<img src="' + Fn + '" width="200px"';
-				return Tag;
-			},
-			choices: [],
-			prompt: [],
-			trial_duration: 1000
-		};
-
-		// Trial object that presents the A cue
-		var Show_A = {
-			type: jsPsychHtmlButtonResponse,
-			stimulus: function () {
-				var FieldIdx = jsPsych.timelineVariable('FieldIdx_A');
-				var Fn = jsPsych.timelineVariable('Fn_A');
-				var Tag = '<img src="' + Fn + '" width="400px" id="Cue_' + FieldIdx.toString().padStart(2, '0') + '"';
-				return Tag;
-			},
-			choices: [],
-			prompt: [],
-			trial_duration: 1000
-		};
-
-		// Specifiy the Inter-cue-iterval event
-		var ICI = {
-			type: jsPsychHtmlButtonResponse,
-			stimulus: '<p><font color="#ffffff" size="30px">+</font></p>',
-			choices: [],
-			prompt: "",
-			trial_duration: 200
-		};
-
-		// Trial object that presents the B cue
-		var Show_B = {
-			type: jsPsychHtmlButtonResponse,
-			stimulus: function () {
-				var FieldIdx = jsPsych.timelineVariable('FieldIdx_B');
-				var Fn = jsPsych.timelineVariable('Fn_B');
-				var Tag = '<img src="' + Fn + '" width="400px" id="Cue_' + FieldIdx.toString().padStart(2, '0') + '"';
-				return Tag;
-			},
-			choices: [],
-			prompt: [],
-			trial_duration: 1000
-		};
-
-		var StartTime_ResponsePrompt = NaN;
-		var ResponsePrompt = {
-			type: jsPsychHtmlButtonResponse,
-			stimulus: function () {
-				var T0 = GetFullQuestion();
-				var T1 = GetSparkOptions();
-				var T0T1 = T0 + '<br /><br />' + T1;
-				return T0T1;
-			},
-			choices: [],
-			prompt: [],
-			trial_duration: null,
-			on_start: function () {
-				StartTime_ResponsePrompt = jsPsych.getTotalTime();
-			}
-		};
-
-		SeedRng().then(function () {
-			var TrialLoop = {
-				timeline: [PreTrialOps, Fixation, Show_S, Show_A, ICI, Show_B, ResponsePrompt],
-				timeline_variables: TimelineVars,
-				randomize_order: true,
-				loop_function: function () { return true; }
-			};
-			jsPsych.run([PreloadImgs, EnterFullscreen, TrialLoop, ExitFullscreen]);
-		});
-
+		PromiseChain();
 	</script>
 </head>
 <body></body>

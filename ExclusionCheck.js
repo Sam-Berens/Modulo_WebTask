@@ -894,22 +894,15 @@
     }
 
 })(typeof window === 'object' ? window : this);
-
-
 // ---------------------------------------------------------------------------------------------------
 
 
 // --- Check for exclusions ---
-
-// Set Exclude to be a global variable accessible to all JS functions:
+// Set Exclude to be a global variable accessible to all JS functions
 var Exclude = false;
 
-// Define the CheckExclusion function:
+// Define the CheckExclusion function
 function CheckExclusion() {
-	
-	if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-		Exclude = true;
-	}
 	
 	var UserAgentParser = new UAParser();
 	var UserAgentResult = UserAgentParser.getResult();
@@ -921,6 +914,9 @@ function CheckExclusion() {
 	    if (BrowserName.includes('IE')){
 		    Exclude = true;
 	    }
+        if (BrowserName.includes('Edge')){
+            Exclude = true;
+        }
 	} catch(Err) {
 	    if (BrowserName == 'IE'){
 		    Exclude = true;
