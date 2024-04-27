@@ -44,7 +44,11 @@ var PreTrialOps = {
 
         // Based on the training history, calculate Qdist (the distribution to sample from)
         var TrialCount = TrainHistory.reduce((x,y) => {return x+y;},0);
-        var Pactual = TrainHistory.map((x) => {return x/TrialCount;});
+        if (TrialCount > 0) {
+            var Pactual = TrainHistory.map((x) => {return x/TrialCount;});
+        } else {
+            var Pactual = TrainHistory;
+        }
         var aP = Ptarget.map((p,ii) => {return Math.max(p-Pactual[ii],0);});
         var Qdist = Ptarget.map((p,ii) => {return p+aP[ii];});
         var Qsum = Qdist.reduce((x,y) => {return x+y;},0);

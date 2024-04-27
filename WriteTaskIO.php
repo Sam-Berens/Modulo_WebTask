@@ -53,12 +53,13 @@ $Correct = mysqli_real_escape_string($Conn,$Correct);
 $RT = $Input['RT'];
 $RT = mysqli_real_escape_string($Conn,$RT);
 
-// Generate the AttemptId:
-$AttemptId = $SubjectId.'_'.sprintf('%03d',$SessionId).'_'.sprintf('%03d',$TrialId).'_'.sprintf('%01d',$AttemptNum);
-
 // Generate DateTime_Write:
 $Now = new DateTimeImmutable("now", new DateTimeZone('Europe/London'));
 $DateTime_Write = $Now->format('Y-m-d\TH:i:s');
+
+// Generate the AttemptId:
+$AttemptId = $SubjectId.'_'.sprintf('%03d',$SessionId).'_'.sprintf('%03d',$TrialId).'_'.sprintf('%01d',$AttemptNum).'_'.$DateTime_Write;
+$AttemptId = md5($AttemptId);
 
 // Create the SQL request
 $Sql = "CALL RecordTaskIO('$AttemptId','$SubjectId',$SessionId,$TrialId,$PairId,'$TrialType',$OppId,$FieldIdx_A,$FieldIdx_B,$FieldIdx_C,$AttemptNum,$FieldIdx_R,$Correct,$RT,'$DateTime_Write')";
