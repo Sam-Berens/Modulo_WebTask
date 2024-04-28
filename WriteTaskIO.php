@@ -23,6 +23,9 @@ $SessionId = mysqli_real_escape_string($Conn,$SessionId);
 $TrialId = $Input['TrialId'];
 $TrialId = mysqli_real_escape_string($Conn,$TrialId);
 
+$FieldSize = $Input['FieldSize'];
+$FieldSize = mysqli_real_escape_string($Conn,$FieldSize);
+
 $PairId = $Input['PairId'];
 $PairId = mysqli_real_escape_string($Conn,$PairId);
 
@@ -62,7 +65,7 @@ $AttemptId = $SubjectId.'_'.sprintf('%03d',$SessionId).'_'.sprintf('%03d',$Trial
 $AttemptId = md5($AttemptId);
 
 // Create the SQL request
-$Sql = "CALL RecordTaskIO('$AttemptId','$SubjectId',$SessionId,$TrialId,$PairId,'$TrialType',$OppId,$FieldIdx_A,$FieldIdx_B,$FieldIdx_C,$AttemptNum,$FieldIdx_R,$Correct,$RT,'$DateTime_Write')";
+$Sql = "CALL RecordTaskIO('$AttemptId','$SubjectId',$SessionId,$TrialId,$FieldSize,$PairId,'$TrialType',$OppId,$FieldIdx_A,$FieldIdx_B,$FieldIdx_C,$AttemptNum,$FieldIdx_R,$Correct,$RT,'$DateTime_Write')";
 //error_log($Sql);
 
 // Run the query:
