@@ -1,0 +1,7 @@
+CREATE TABLE `b01_DataStore`.`Register` ( 
+`SubjectId` TEXT NOT NULL ,
+`Phase` TINYINT(1) NULL DEFAULT NULL ,
+`Large2Small` BOOLEAN NULL DEFAULT NULL ,
+`FieldPerms` TEXT NULL DEFAULT NULL ,
+`TaskSets` TEXT NULL DEFAULT NULL , 
+PRIMARY KEY (`SubjectId`(8))) ENGINE = MyISAM;

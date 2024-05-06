@@ -11,8 +11,7 @@ if ($Conn->connect_error) {
     die("Connection failed: " . $Conn->connect_error);
 }
 
-//$Input = json_decode(file_get_contents('php://input'), true);
-$Input['SubjectId'] = "Test";
+$Input = json_decode(file_get_contents('php://input'), true);
 
 // Get all the inputs:
 $SubjectId = $Input['SubjectId'];

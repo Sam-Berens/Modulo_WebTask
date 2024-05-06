@@ -13,18 +13,21 @@ if ($Conn->connect_error) {
 
 $Input = json_decode(file_get_contents('php://input'), true);
 
-// Get all the inputs:
+// Unpack all the inputs:
 $SubjectId = $Input['SubjectId'];
 $SubjectId = mysqli_real_escape_string($Conn,$SubjectId);
+
+$Phase = $Input['Phase'];
+$Phase = mysqli_real_escape_string($Conn,$Phase);
+
+$FieldSize = $Input['FieldSize'];
+$FieldSize = mysqli_real_escape_string($Conn,$FieldSize);
 
 $SessionId = $Input['SessionId'];
 $SessionId = mysqli_real_escape_string($Conn,$SessionId);
 
 $TrialId = $Input['TrialId'];
 $TrialId = mysqli_real_escape_string($Conn,$TrialId);
-
-$FieldSize = $Input['FieldSize'];
-$FieldSize = mysqli_real_escape_string($Conn,$FieldSize);
 
 $PairId = $Input['PairId'];
 $PairId = mysqli_real_escape_string($Conn,$PairId);
@@ -65,8 +68,7 @@ $AttemptId = $SubjectId.'_'.sprintf('%03d',$SessionId).'_'.sprintf('%03d',$Trial
 $AttemptId = md5($AttemptId);
 
 // Create the SQL request
-$Sql = "CALL RecordTaskIO('$AttemptId','$SubjectId',$SessionId,$TrialId,$FieldSize,$PairId,'$TrialType',$OppId,$FieldIdx_A,$FieldIdx_B,$FieldIdx_C,$AttemptNum,$FieldIdx_R,$Correct,$RT,'$DateTime_Write')";
-//error_log($Sql);
+$Sql = "CALL RecordTaskIO('$AttemptId','$SubjectId',$Phase,$FieldSize,$SessionId,$TrialId,$PairId,'$TrialType',$OppId,$FieldIdx_A,$FieldIdx_B,$FieldIdx_C,$AttemptNum,$FieldIdx_R,$Correct,$RT,'$DateTime_Write')";
 
 // Run the query:
 if (!($Conn->query($Sql))) {

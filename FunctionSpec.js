@@ -5,7 +5,7 @@ function Sleep(ms) {
 
 // Function to convert FieldIdx to filenames
 function FieldIdx2ImgName(FieldIdx) {
-	var ImgName = './TestShapes/i' + FieldPermutation.indexOf(FieldIdx).toString().padStart(2, '0') + '.jpg';
+	var ImgName = './TestShapes/i' + FieldPerm.indexOf(FieldIdx).toString().padStart(2, '0') + '.jpg';
 	return ImgName;
 }
 
@@ -41,6 +41,7 @@ function GetTimelineVars() {
 		var Fn_S = Sym[OppIdx];
 		var Ptarget = 3 / ((Sup.length * 3) + Uns.length); // This will show all Sup pairs 3x more often as Uns pairs;
 		var TrialObj = {
+			FieldSize: FieldSize,
 			TrialType: 'Sup',
 			OppId: OppIdx,
 			PairId: PairId,
@@ -68,6 +69,7 @@ function GetTimelineVars() {
 		var Fn_S = Sym[OppIdx];
 		var Ptarget = 1 / ((Sup.length * 3) + Uns.length); // This will show all Uns pairs 3x less often as Sup pairs;
 		var TrialObj = {
+			FieldSize: FieldSize,
 			TrialType: 'Uns',
 			OppId: OppIdx,
 			PairId: PairId,
@@ -175,6 +177,8 @@ async function ImgClicked(Id) {
 	// Save the data:
 	var DataToSend = {};
 	DataToSend.SubjectId = SubjectId;
+	DataToSend.Phase = Phase;
+	DataToSend.FieldSize = FieldSize;
 	DataToSend.SessionId = SessionId;
 	DataToSend.TrialId = TrialId;
 	DataToSend.PairId = CurrentQuestion.PairId;
@@ -239,7 +243,7 @@ async function ImgClicked(Id) {
 }
 
 // Called at the very end of the Promise chain to run jsPsych
-function RunTrailLoop() {
+function RunTrialLoop() {
 	var TrialLoop = {
 		timeline: [PreTrialOps, Fixation, Show_S, Show_A, ICI, Show_B, ResponsePrompt],
 		loop_function: function () { return true; }
@@ -251,5 +255,5 @@ function RunTrailLoop() {
 async function PromiseChain() {
 	await GetTrainHist();
 	await SeedRng();
-	RunTrailLoop();
+	RunTrialLoop();
 }
