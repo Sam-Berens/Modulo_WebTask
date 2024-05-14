@@ -14,7 +14,7 @@ if ($Conn->connect_error) {
 $Input = json_decode(file_get_contents('php://input'), true);
 if (!$Input) {
 	$Input = $_POST; // Only used when testing via MATLAB's webwrite function.
-} 
+}
 
 // Unpack the SubjectId:
 $SubjectId = $Input['SubjectId'];
@@ -36,7 +36,12 @@ if ($Result === false) {
 	die('Query Sql failed to execute successfully;');
 } else {
 	$LastSessionId = mysqli_fetch_assoc($Result);
-	$LastSessionId = intval($LastSessionId['MAX(SessionId)']);
+	$IsSet = isset($LastSessionId['MAX(SessionId)']);
+	if (!$IsSet) {
+		$LastSessionId = -1;
+	} else {
+		$LastSessionId = intval($LastSessionId['MAX(SessionId)']);
+	}
 	$DataToSend['SessionId']  = $LastSessionId + 1;
 }
 
@@ -50,9 +55,9 @@ if ($Result === false) {
 	$Result = mysqli_fetch_assoc($Result);
 
 	// Determine which set to send
-	$Phase = $Result['Phase'];
-	$Large2Small = $Result['Large2Small'];
-	$Large = $Phase xor $Large2Small;
+	$Phase = intval($Result['Phase']);
+	$Large2Small = intval($Result['Large2Small']);
+	$Large = ($Phase xor $Large2Small);
 	if (!$Large) {
 		$FieldSize = 5;
 	} else {

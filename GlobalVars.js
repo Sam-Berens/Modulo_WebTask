@@ -1,11 +1,11 @@
 // Session specific
-var Phase = 0;
-var FieldSize = 7;
-var SessionId = 78;
-var ImgPerm = [4, 2, 3, 1, 0, 5, 6];
-var TimelineVars = GetTimelineVars();
-var ArrayOfResponseTags = GetArrayOfResponseTags();
-var Ptarget = TimelineVars.map((o)=>o.Ptarget);
+var SessionId;
+var Phase;
+var FieldSize;
+var ImgPerm;
+var TaskSet;
+var Ptarget;
+var ArrayOfResponseTags;
 var TrainHistory;
 
 // Trial specific
