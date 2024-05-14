@@ -23,14 +23,14 @@ $SubjectId = mysqli_real_escape_string($Conn,$SubjectId);
 $Large2Small = $Input['Large2Small'];
 $Large2Small = mysqli_real_escape_string($Conn,$Large2Small);
 
-$FieldPerms = $Input['FieldPerms'];
-$FieldPerms = mysqli_real_escape_string($Conn,$FieldPerms);
+$ImgPerms = $Input['ImgPerms'];
+$ImgPerms = mysqli_real_escape_string($Conn,$ImgPerms);
 
 $TaskSets = $Input['TaskSets'];
 $TaskSets = mysqli_real_escape_string($Conn,$TaskSets);
 
 // Create the SQL request
-$Sql = "CALL RecordRegister('$SubjectId',$Large2Small,'$FieldPerms','$TaskSets')";
+$Sql = "CALL RecordRegister('$SubjectId',$Large2Small,'$ImgPerms','$TaskSets')";
 
 // Run the query:
 if (!($Conn->query($Sql))) {

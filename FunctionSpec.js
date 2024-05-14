@@ -5,7 +5,7 @@ function Sleep(ms) {
 
 // Function to convert FieldIdx to filenames
 function FieldIdx2ImgName(FieldIdx) {
-	var ImgName = './TestShapes/i' + FieldPerm.indexOf(FieldIdx).toString().padStart(2, '0') + '.jpg';
+	var ImgName = './TestShapes/i' + ImgPerm.indexOf(FieldIdx).toString().padStart(2, '0') + '.jpg';
 	return ImgName;
 }
 
