@@ -190,8 +190,8 @@ async function ImgClicked(Id) {
 			// Set all other responses to have a black border:
 			BlackenBoarders(FieldIdx_Response);
 
-			// Sleep for 1 second:
-			await Sleep(1000);
+			// Sleep for 4 second:
+			await Sleep(4000);
 
 			// End the trial:
 			jsPsych.finishTrial();
@@ -217,7 +217,8 @@ async function ImgClicked(Id) {
 // Called at the very end of the Promise chain to run jsPsych
 function RunTrialLoop() {
 	var TrialLoop = {
-		timeline: [PreTrialOps, Fixation, Show_A, ICI, Show_B, Show_S, ResponsePrompt],
+		//timeline: [PreTrialOps, Fixation, Show_A, ICI, Show_B, Show_S, ResponsePrompt],
+		timeline: [PreTrialOps, Fixation, ResponsePrompt],
 		loop_function: function () { return true; }
 	};
 	jsPsych.run([PreloadImgs, EnterFullscreen, TrialLoop, ExitFullscreen]);
