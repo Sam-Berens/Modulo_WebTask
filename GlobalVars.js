@@ -7,6 +7,7 @@ var TaskSet;
 var Ptarget;
 var ArrayOfResponseTags;
 var TrainHistory;
+var BiasQ = false; // Bias the sampling distribution of pairs to rapidly return to Ptarget;
 
 // Trial specific
 var TrialId = -1;

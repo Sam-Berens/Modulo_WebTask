@@ -54,8 +54,13 @@ var PreTrialOps = {
         } else {
             var Pactual = TrainHistory;
         }
-        var aP = Ptarget.map((p,ii) => {return Math.max(p-Pactual[ii],0);});
-        var Qdist = Ptarget.map((p,ii) => {return p+aP[ii];});
+        var Qdist;
+        if (BiasQ) {
+            var aP = Ptarget.map((p,ii) => {return Math.max(p-Pactual[ii],0);});
+            Qdist = Ptarget.map((p,ii) => {return p+aP[ii];});
+        } else {
+            Qdist = Pactual;
+        }
         var Qsum = Qdist.reduce((x,y) => {return x+y;},0);
         Qdist = Qdist.map((q) => {return q/Qsum;});
 
