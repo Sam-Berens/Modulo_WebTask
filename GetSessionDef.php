@@ -20,12 +20,11 @@ if (!$Input) {
 $SubjectId = $Input['SubjectId'];
 $SubjectId = mysqli_real_escape_string($Conn,$SubjectId);
 
-// This function must return three JavaScript variables:
+// This function must return four JavaScript variables:
 //      1) SessionId (an integer)
-//      2) Phase (an integer)
-//      3) FieldSize (an integer)
-//      4) ImgPerm (an array of ints)
-//      5) TaskSet (an array of objects that can be set to CurrentQuestion in ObjectSpec.js)
+//      2) FieldSize (an integer)
+//      3) ImgPerm (an array of ints)
+//      4) TaskSet (an array of objects that can be set to CurrentQuestion in ObjectSpec.js)
 $DataToSend = array();
 
 // Get SessionId
@@ -45,7 +44,7 @@ if ($Result === false) {
 	$DataToSend['SessionId']  = $LastSessionId + 1;
 }
 
-// Get Phase, Large2Small, ImgPerms, and TaskSets from the Register table
+// Get ImgPerm and TaskSet from the Register table
 $Sql = "SELECT * FROM Register WHERE SubjectId='$SubjectId';";
 $Result = mysqli_query($Conn,$Sql);
 if ($Result === false) {
@@ -54,24 +53,14 @@ if ($Result === false) {
 } else {
 	$Result = mysqli_fetch_assoc($Result);
 
-	// Determine which set to send
-	$Phase = intval($Result['Phase']);
-	$Large2Small = intval($Result['Large2Small']);
-	$Large = ($Phase xor $Large2Small);
-	if (!$Large) {
-		$FieldSize = 5;
-	} else {
-		$FieldSize = 7;
-	}
+	// Set the FieldSize
+	$FieldSize = 6;
 
 	// Extract the relevant ImgPerm and TaskSet
-	$ImgPerms = get_object_vars(json_decode($Result['ImgPerms']));
-	$ImgPerm = $ImgPerms[sprintf('S%02d',$FieldSize)];
-	$TaskSets = get_object_vars(json_decode($Result['TaskSets']));
-	$TaskSet = $TaskSets[sprintf('S%02d',$FieldSize)];
+	$ImgPerm = json_decode($Result['ImgPerm']);
+	$TaskSet = json_decode($Result['TaskSet']);
 
 	// Package the result
-	$DataToSend['Phase'] = $Phase;
 	$DataToSend['FieldSize'] = $FieldSize;
 	$DataToSend['ImgPerm'] = $ImgPerm;
 	$DataToSend['TaskSet'] = $TaskSet;

@@ -1,24 +1,19 @@
 DELIMITER $$
 CREATE PROCEDURE RecordRegister(
 	IN In_SubjectId TEXT,
-	IN In_Large2Small BOOLEAN,
-	IN In_ImgPerms TEXT,
-	IN In_TaskSets TEXT
+	IN In_ImgPerm TEXT,
+	IN In_TaskSet TEXT
 )
 BEGIN
 IF (SELECT COUNT(SubjectId) FROM Register WHERE SubjectId=In_SubjectId)=0 THEN 
 	INSERT INTO Register (
 		SubjectId,
-		Phase,
-		Large2Small,
-		ImgPerms,
-		TaskSets
+		ImgPerm,
+		TaskSet
 		) VALUES (
 		In_SubjectId,
-		0,
-		In_Large2Small,
-		In_ImgPerms,
-		In_TaskSets);
+		In_ImgPerm,
+		In_TaskSet);
 END IF;
 END$$
 DELIMITER ;

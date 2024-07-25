@@ -1,6 +1,5 @@
 // Session specific
 var SessionId;
-var Phase;
 var FieldSize;
 var ImgPerm;
 var TaskSet;

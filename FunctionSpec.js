@@ -9,7 +9,7 @@ function FieldIdx2ImgName(FieldIdx) {
 	return ImgName;
 }
 
-// Function to get the SessionId, Phase, FieldSize, ImgPerm, and TaskSet
+// Function to get the SessionId, FieldSize, ImgPerm, and TaskSet
 async function GetSessionDef() {
 
 	var DataToSend = {};
@@ -24,7 +24,6 @@ async function GetSessionDef() {
 
 	var SessionDef = await P1.json();
 	SessionId = SessionDef.SessionId;
-	Phase = SessionDef.Phase;
 	FieldSize = SessionDef.FieldSize;
 	ImgPerm = SessionDef.ImgPerm;
 	TaskSet = SessionDef.TaskSet;
@@ -84,23 +83,23 @@ function GetSparkOptions() {
 	// Get the shuffled array and turn into string:
 	var HtmlString = Shuffle(ArrayOfResponseTags).toString();
 	// Add the table header:
-	HtmlString = '<table style="width:100%;text-align:center;"> <tbody><tr> <td colspan="4" align="center"> <table><tr><td>' + HtmlString;
+	HtmlString = '<table style="width:100%;text-align:center;"> <tbody><tr> <td colspan="3" align="center"> <table><tr><td>' + HtmlString;
+
 	// Replace the 1st comma with a column separator (top row, between 1st and 2nd image):
 	HtmlString = HtmlString.replace(',', '</td><td>');
-	if (FieldSize == 7) {
-		// Replace the 2nd comma with a column separator (top row, between 2nd and 3rd image):
-		HtmlString = HtmlString.replace(',', '</td><td>');
-	}
+
+	// Replace the 2nd comma with a column separator (top row, between 2nd and 3rd image):
+	HtmlString = HtmlString.replace(',', '</td><td>');
+
 	// Replace the 3rd comma with a column, row, and table separator (end of top row, start of 2nd):
 	HtmlString = HtmlString.replace(',', '</td></tr></table><tr><td>');
+	
 	// Replace the 4th comma with a column separator (bottom row, between 1st and 2nd image):
 	HtmlString = HtmlString.replace(',', '</td><td>');
+
 	// Replace the 5th comma with a column separator (bottom row, between 2nd and 3rd image):
 	HtmlString = HtmlString.replace(',', '</td><td>');
-	if (FieldSize == 7) {
-		// Replace the 6th comma with a column separator (bottom row, between 3rd and 4th image):
-		HtmlString = HtmlString.replace(',', '</td><td>');
-	}
+
 	// Close the table:
 	HtmlString = HtmlString + '</td></tr></tbody></table>';
 	return HtmlString;
@@ -149,7 +148,6 @@ async function ImgClicked(Id) {
 	// Save the data:
 	var DataToSend = {};
 	DataToSend.SubjectId = SubjectId;
-	DataToSend.Phase = Phase;
 	DataToSend.FieldSize = FieldSize;
 	DataToSend.SessionId = SessionId;
 	DataToSend.TrialId = TrialId;

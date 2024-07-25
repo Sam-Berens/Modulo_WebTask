@@ -2,7 +2,6 @@ DELIMITER $$
 CREATE PROCEDURE RecordTaskIO(
 	IN In_AttemptId TEXT,
 	IN In_SubjectId TEXT,
-	IN In_Phase TINYINT(1),
 	IN In_FieldSize INT,
 	IN In_SessionId INT,
 	IN In_TrialId INT,
@@ -23,7 +22,6 @@ IF (SELECT COUNT(AttemptId) FROM TaskIO WHERE AttemptId=In_AttemptId)=0 THEN
 	INSERT INTO TaskIO (
 		AttemptId,
 		SubjectId,
-		Phase,
 		FieldSize,
 		SessionId,
 		TrialId,
@@ -41,7 +39,6 @@ IF (SELECT COUNT(AttemptId) FROM TaskIO WHERE AttemptId=In_AttemptId)=0 THEN
 		) VALUES (
 		In_AttemptId,
 		In_SubjectId,
-		In_Phase,
 		In_FieldSize,
 		In_SessionId,
 		In_TrialId,

@@ -20,27 +20,11 @@ if (!$Input) {
 $SubjectId = $Input['SubjectId'];
 $SubjectId = mysqli_real_escape_string($Conn, $SubjectId);
 
-// Get the current Phase and FieldSize for this subject
-$Sql1 = "SELECT * FROM Register WHERE SubjectId='$SubjectId';";
-$Result = mysqli_query($Conn, $Sql1);
-if ($Result === false) {
-    $Conn->close();
-    die('Query Sql1 failed to execute successfully;');
-} else {
-    $Result = mysqli_fetch_assoc($Result);
-
-    $Phase = intval($Result['Phase']);
-    $Large2Small = intval($Result['Large2Small']);
-    $Large = ($Phase xor $Large2Small);
-    if (!$Large) {
-        $FieldSize = 5;
-    } else {
-        $FieldSize = 7;
-    }
-}
+// Set the FieldSize
+$FieldSize = 6;
 
 // Get the MinSessionId
-$Sql2 = "SELECT MIN(SessionId) FROM TaskIO WHERE SubjectId='$SubjectId' AND Phase=$Phase;";
+$Sql2 = "SELECT MIN(SessionId) FROM TaskIO WHERE SubjectId='$SubjectId';";
 $Result = mysqli_query($Conn, $Sql2);
 if ($Result === false) {
     $Conn->close();
@@ -56,7 +40,7 @@ if ($Result === false) {
 }
 
 // Get the MaxSessionId
-$Sql3 = "SELECT MAX(SessionId) FROM TaskIO WHERE SubjectId='$SubjectId' AND Phase=$Phase;";
+$Sql3 = "SELECT MAX(SessionId) FROM TaskIO WHERE SubjectId='$SubjectId';";
 $Result = mysqli_query($Conn, $Sql3);
 if ($Result === false) {
     $Conn->close();
@@ -71,7 +55,7 @@ if ($Result === false) {
     }
 }
 
-// Create an array of Sessions (Sessions, Accuracy*) for the current experimental phase;
+// Create an array of Sessions (Sessions, Accuracy*);
 $Sup['SessionId'] = array();
 $Sup['SessionN'] = array();
 $Sup['TrialId'] = array();
@@ -103,7 +87,6 @@ for ($iSId = $MinSessionId; $iSId <= $MaxSessionId; $iSId++) {
     // Run a query to select out all Sup attempts for the iSId'th Session
     $Sql4 = "SELECT * FROM TaskIO WHERE 
 		SubjectId='$SubjectId' AND 
-		Phase=$Phase AND 
 		SessionId=$iSId AND 
         TrialType='Sup'
 		ORDER BY DateTime_Write ASC;";
@@ -152,7 +135,6 @@ for ($iSId = $MinSessionId; $iSId <= $MaxSessionId; $iSId++) {
     // Run a query to select out all Uns attempts for the iSId'th Session
     $Sql4 = "SELECT * FROM TaskIO WHERE 
     SubjectId='$SubjectId' AND 
-    Phase=$Phase AND 
     SessionId=$iSId AND 
     TrialType='Uns'
     ORDER BY DateTime_Write ASC;";
@@ -190,5 +172,5 @@ for ($iSId = $MinSessionId; $iSId <= $MaxSessionId; $iSId++) {
 $DataToSend = array();
 $DataToSend['Sup'] = $Sup;
 $DataToSend['Uns'] = $Uns;
-echo (json_encode($DataToSend));
+echo(json_encode($DataToSend));
 $Conn->close();

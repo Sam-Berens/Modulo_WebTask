@@ -20,25 +20,8 @@ if (!$Input) {
 $SubjectId = $Input['SubjectId'];
 mysqli_real_escape_string($Conn,$SubjectId);
 
-// Get FieldSize from the Register table
-$Sql1 = "SELECT * FROM Register WHERE SubjectId='$SubjectId';";
-$Result = mysqli_query($Conn,$Sql1);
-if ($Result === false) {
-	$Conn->close();
-	die('Query Sql1 failed to execute successfully;');
-} else {
-	$Result = mysqli_fetch_assoc($Result);
-
-	// Determine which set to send
-	$Phase = intval($Result['Phase']);
-	$Large2Small = intval($Result['Large2Small']);
-	$Large = ($Phase xor $Large2Small);
-	if (!$Large) {
-		$FieldSize = 5;
-	} else {
-		$FieldSize = 7;
-	}
-}
+// Set FieldSize
+$FieldSize = 6;
 
 // Get the count for each pair
 $Counts = array();

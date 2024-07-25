@@ -17,9 +17,6 @@ $Input = json_decode(file_get_contents('php://input'), true);
 $SubjectId = $Input['SubjectId'];
 $SubjectId = mysqli_real_escape_string($Conn,$SubjectId);
 
-$Phase = $Input['Phase'];
-$Phase = mysqli_real_escape_string($Conn,$Phase);
-
 $FieldSize = $Input['FieldSize'];
 $FieldSize = mysqli_real_escape_string($Conn,$FieldSize);
 
@@ -68,7 +65,7 @@ $AttemptId = $SubjectId.'_'.sprintf('%03d',$SessionId).'_'.sprintf('%03d',$Trial
 $AttemptId = md5($AttemptId);
 
 // Create the SQL request
-$Sql = "CALL RecordTaskIO('$AttemptId','$SubjectId',$Phase,$FieldSize,$SessionId,$TrialId,$PairId,'$TrialType',$OppId,$FieldIdx_A,$FieldIdx_B,$FieldIdx_C,$AttemptNum,$FieldIdx_R,$Correct,$RT,'$DateTime_Write')";
+$Sql = "CALL RecordTaskIO('$AttemptId','$SubjectId',$FieldSize,$SessionId,$TrialId,$PairId,'$TrialType',$OppId,$FieldIdx_A,$FieldIdx_B,$FieldIdx_C,$AttemptNum,$FieldIdx_R,$Correct,$RT,'$DateTime_Write')";
 
 // Run the query:
 if (!($Conn->query($Sql))) {

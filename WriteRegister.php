@@ -20,17 +20,14 @@ if (!$Input) {
 $SubjectId = $Input['SubjectId'];
 $SubjectId = mysqli_real_escape_string($Conn,$SubjectId);
 
-$Large2Small = $Input['Large2Small'];
-$Large2Small = mysqli_real_escape_string($Conn,$Large2Small);
+$ImgPerm = $Input['ImgPerm'];
+$ImgPerm = mysqli_real_escape_string($Conn,$ImgPerm);
 
-$ImgPerms = $Input['ImgPerms'];
-$ImgPerms = mysqli_real_escape_string($Conn,$ImgPerms);
-
-$TaskSets = $Input['TaskSets'];
-$TaskSets = mysqli_real_escape_string($Conn,$TaskSets);
+$TaskSet = $Input['TaskSet'];
+$TaskSet = mysqli_real_escape_string($Conn,$TaskSet);
 
 // Create the SQL request
-$Sql = "CALL RecordRegister('$SubjectId',$Large2Small,'$ImgPerms','$TaskSets')";
+$Sql = "CALL RecordRegister('$SubjectId','$ImgPerm','$TaskSet')";
 
 // Run the query:
 if (!($Conn->query($Sql))) {
