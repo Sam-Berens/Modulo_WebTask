@@ -68,15 +68,74 @@ winopen(Imgs{ii})
 rng(1);
 SimStruct = struct();
 nIter = 1e5;
-Tri = tril(true(12),-1);
+Tri = tril(true(6),-1);
+fh = waitbar(0,'Resizing...');
 for iIter = 1:nIter
-    s = randperm(numel(Imgs))'<=12;
+    s = randperm(numel(Imgs))'<=6;
     SimStruct(iIter,1).s = s;
     S = logical(s*s');
-    SSimMats = cellfun(@(M)reshape(M(S),12,12),SimMats,'UniformOutput',false);
-    vSM = SSimMats{1}(Tri);
+    SSimMat = reshape(SimMats{1}(S),6,6);
+    %SSimMats = cellfun(@(M)reshape(M(S),6,6),SimMats,'UniformOutput',false);
+    vSM = SSimMat(Tri);
     SimStruct(iIter,1).vSM = vSM;
     SimStruct(iIter,1).Mu = mean(vSM);
     SimStruct(iIter,1).Var = moment(vSM,2);
     SimStruct(iIter,1).Skw = moment(vSM,3);
+    if mod(iIter,37)==0
+        waitbar(iIter/nIter,fh);
+    end
 end
+
+%%
+for iIter = 1:nIter
+    SimStruct(iIter,1).ImgNames = Imgs(SimStruct(iIter,1).s);
+end
+
+%%
+SimTable = struct2table(SimStruct);
+SimTable.Mu = -zscore(SimTable.Mu);
+SimTable.Var = zscore(SimTable.Var);
+SimTable.Skw = -zscore(abs(SimTable.Skw));
+SimTable = sortrows(SimTable,'Var','descend');
+
+%%
+ii = 3;
+figure;
+for jj = 1:6
+    subplot(2,3,jj);
+    fn = SimTable.ImgNames{ii}{jj};
+    II = imread(fn);
+    imshow(II);
+    [~,sfn] = fileparts(fn);
+    disp(sfn);
+end
+disp('/n');
+
+
+%%
+Chosen = {
+    '.\rImgs\b4nnA02r207-g3nnB03r231-w5nnC06r141_i1d324_A.png'
+    '.\rImgs\g3nnA04r007-o3nsC03r349-y5nnB03r138_i3d331_A.png'
+    '.\rImgs\b4nnC02r125-o2nsA04r098-p6nnB04r087_i1d028_A.png'
+    '.\rImgs\p6nnA06r005-w4nsC01r246-y5nnB06r309_i2d036_A.png'
+    '.\rImgs\g3nnC02r174-w4nsA04r310-w5nnB00r172_i3d009_A.png'
+    '.\rImgs\b4nnB02r040-o3nsC00r047-w4nsA01r186_i1d354_A.png'
+    };
+figure;
+for jj = 1:6
+    subplot(2,3,jj);
+    fn = Chosen{jj};
+    II = imread(fn);
+    imshow(II);
+    [~,sfn] = fileparts(fn);
+    disp(sfn);
+end
+
+%%
+s = ismember(Imgs,Chosen);
+S = logical(s*s');
+SSimMat = reshape(SimMats{1}(S),6,6);
+vSM = SSimMat(Tri);
+mean(vSM)
+moment(vSM,2)
+moment(vSM,3)
