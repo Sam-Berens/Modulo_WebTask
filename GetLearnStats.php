@@ -126,7 +126,7 @@ for ($iS = $MinSessionId; $iS <= $MaxSessionId; $iS++) {
 		}
 	}
 
-	// Pad out the Accuracy stats so that they always have elements
+	// Pad out the Accuracy stats so that they always have 3 elements
 	for ($iT = 0; $iT < sizeof($Trials); $iT++) {
 		$Trials[$iT]['Accuracy'] = array_pad($Trials[$iT]['Accuracy'], 3, 1);
 	}
@@ -183,15 +183,24 @@ function MapValues($x)
 {
 	$beta = 2;
 	$y = (exp($x*$beta)-1) / (exp($beta)-1);
-	$z = max($y, 0);
-	return $z;
+	//$z = max($y, 0);
+	return $y;
 }
 $Accuracy0 = array_map('MapValues', $Accuracy0);
 $Accuracy1 = array_map('MapValues', $Accuracy1);
 $Accuracy2 = array_map('MapValues', $Accuracy2);
 
+// Create a domain for all the accuracy values
+$SessionN = range(0, sizeof($Accuracy0));
+
+// Add a zero at beginning of each Accuracy array
+array_unshift($Accuracy0, 0);
+array_unshift($Accuracy1, 0);
+array_unshift($Accuracy2, 0);
+
 // Package up data to return
 $DataToSend = array();
+$DataToSend['SessionN'] = $SessionN;
 $DataToSend['Accuracy0'] = $Accuracy0;
 $DataToSend['Accuracy1'] = $Accuracy1;
 $DataToSend['Accuracy2'] = $Accuracy2;

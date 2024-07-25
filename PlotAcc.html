@@ -1,34 +1,85 @@
 <!DOCTYPE html>
 <html>
+<title>Learning curves</title>
+
+<!-- Set the favicon logo -->
+<link rel="icon" href="./Logo.png" type="image/x-icon" />
+
+<!-- Get participant IDs passed in from URL -->
+<script src="./Assets/GetPpantIds.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 
-<body>
-    <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+<style>
+    body {
+			background-color: rgb(0, 0, 0);
+		}
+    canvas {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
 
-    <script>
-        var xValues = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+    }
+</style>
 
-        new Chart("myChart", {
+<script>
+    async function OnBodyLoad() {
+        var DataToSend = {};
+        DataToSend.SubjectId = SubjectId;
+
+        //Send data to php script
+        var P1 = await fetch('./GetLearnStats.php', {
+            method: 'post',
+            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+            body: JSON.stringify(DataToSend)
+        });
+
+        var LearnStats = await P1.json();
+        var SessionN = LearnStats.SessionN;
+        var Accuracy0 = LearnStats.Accuracy0;
+        var Accuracy1 = LearnStats.Accuracy1;
+        var Accuracy2 = LearnStats.Accuracy2;
+
+        new Chart("Chart", {
             type: "line",
             data: {
-                labels: xValues,
+                labels: SessionN,
                 datasets: [{
-                    data: [860, 1140, 1060, 1060, 1070, 1110, 1330, 2210, 7830, 2478],
+                    label: '1st try',
+                    data: Accuracy0,
                     borderColor: "red",
                     fill: false
                 }, {
-                    data: [1600, 1700, 1700, 1900, 2000, 2700, 4000, 5000, 6000, 7000],
+                    label: '2nd try',
+                    data: Accuracy1,
                     borderColor: "green",
                     fill: false
                 }, {
-                    data: [300, 700, 2000, 5000, 6000, 4000, 2000, 1000, 200, 100],
+                    label: '3rd try',
+                    data: Accuracy2,
                     borderColor: "blue",
                     fill: false
                 }]
             },
             options: {
-                legend: { display: false }
+                legend: { display: true, labels: {fontSize: 18, fontColor: '#C7C8D0' }},
+                scales: {
+                    yAxes: [{ticks: {min:-0.1353, max: 1, fontSize: 18, fontColor: '#C7C8D0'}, scaleLabel: {display: true, labelString: 'Accuracy', fontSize: 30, fontColor: '#C7C8D0'}, gridLines: {zeroLineColor: '#C7C8D0'}}
+                    ],
+                    xAxes: [{ticks:{fontSize: 18, fontColor: '#C7C8D0'}, scaleLabel:{display: true, labelString: 'Session', fontSize: 30, fontColor: '#C7C8D0'}, gridLines: {zeroLineColor: '#C7C8D0'}}]
+                },
+
+
             }
         });
-    </script>
+
+
+
+    }
+</script>
+
+<body onload="OnBodyLoad()">
+    <canvas id="Chart" style="max-width:90%;max-height:90%;"></canvas>
 </body>
+</html>
