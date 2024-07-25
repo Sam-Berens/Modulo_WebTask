@@ -11,13 +11,6 @@ var PreloadImgs = {
         './Imgs/i03.png',
         './Imgs/i04.png',
         './Imgs/i05.png',
-        './Imgs/i06.png',
-        './Imgs/i07.png',
-        './Imgs/i08.png',
-        './Imgs/i09.png',
-        './Imgs/i10.png',
-        './Imgs/i11.png',
-        './Imgs/S0.png',
         './Imgs/S0.png'
     ]
 };
@@ -59,7 +52,7 @@ var PreTrialOps = {
             var aP = Ptarget.map((p,ii) => {return Math.max(p-Pactual[ii],0);});
             Qdist = Ptarget.map((p,ii) => {return p+aP[ii];});
         } else {
-            Qdist = Pactual;
+            Qdist = Ptarget;
         }
         var Qsum = Qdist.reduce((x,y) => {return x+y;},0);
         Qdist = Qdist.map((q) => {return q/Qsum;});
