@@ -1,10 +1,9 @@
 <?php
 header('Content-Type: application/json');
+require __DIR__ . '/Credentials.php';
 
 // Connect to the database:
 $Servername = "localhost";
-$Username = "sophie";
-$Password = "dragonbrain";
 $Dbname = "b01_DataStore";
 $Conn = new mysqli($Servername, $Username, $Password, $Dbname);
 if ($Conn->connect_error) {
