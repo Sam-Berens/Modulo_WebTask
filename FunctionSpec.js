@@ -56,12 +56,20 @@ async function GetTrainHist() {
 
 // This function is called in the Response trial object stimulus function
 function GetFullQuestion() {
-	var HtmlString = '<table style="width:33%;text-align:center;border:1px solid white;" align="center"><tbody><tr>' +
-		'<td><img src="' + CurrentQuestion.Fn_A + '" width="100px">' + '</td>' +
-		'<td><img src="' + CurrentQuestion.Fn_B + '" width="100px"></td>' +
-		'<td><img src="' + CurrentQuestion.Fn_S + '" width="100px"></td>' +
+	var HtmlString = '<table style="text-align:center;border:1px solid white;" align="center"><tbody><tr>' +
+		'<td><img src="' + CurrentQuestion.Fn_A + '" width="'+ ImgSize.toString() +'px;">' + '</td>' +
+		'<td><img src="' + CurrentQuestion.Fn_B + '" width="'+ ImgSize.toString() +'px;">' + '</td>' +
+		'<td><img src="' + CurrentQuestion.Fn_S + '" width="'+ ImgSize.toString() +'px;"></td>' +
 		'</tr></tbody></table>';
 	return HtmlString;
+}
+
+// OnMouseOver and OnMouseOut functions
+function OnMouseOver(Img) {
+	Img.width = ImgSize - 2;
+}
+function OnMouseOut(Img) {
+	Img.width = ImgSize;
 }
 
 // Function to construct the ArrayOfResponseTags
@@ -71,8 +79,11 @@ function GetArrayOfResponseTags() {
 		var ImgName = FieldIdx2ImgName(FieldIdx);
 		var ResponseTag =
 			'<img src="' + ImgName +
-			'" width="150px" id="Resp_' + FieldIdx.toString().padStart(2, '0') +
-			'" onclick="javascript:ImgClicked(this.id)">';
+			'" width='+ ImgSize.toString() +'px;' + 
+			' id="Resp_' + FieldIdx.toString().padStart(2, '0') +
+			'" onclick="javascript:ImgClicked(this.id)"' +
+			' onmouseover="OnMouseOver(this);"' +
+			' onmouseout="OnMouseOut(this);">';
 		AORT.push(ResponseTag);
 	}
 	return AORT;
@@ -83,7 +94,7 @@ function GetSparkOptions() {
 	// Get the shuffled array and turn into string:
 	var HtmlString = Shuffle(ArrayOfResponseTags).toString();
 	// Add the table header:
-	HtmlString = '<table style="width:100%;text-align:center;"> <tbody><tr> <td colspan="3" align="center"> <table><tr><td>' + HtmlString;
+	HtmlString = '<table style="text-align:center;"> <tbody><tr> <td colspan="3" align="center"> <table><tr><td>' + HtmlString;
 
 	// Replace the 1st comma with a column separator (top row, between 1st and 2nd image):
 	HtmlString = HtmlString.replace(',', '</td><td>');
@@ -119,7 +130,8 @@ function BlackenBoarders(FIdxR) {
 	// Loop over those FieldIdxs:
 	for (var i = 0; i < Idxs.length; i++) {
 		var Ids2change = 'Resp_' + Idxs[i].toString().padStart(2, '0');
-		document.getElementById(Ids2change).style = "border: 1px solid #000000;border-radius: 25px;width: 148px";
+			document.getElementById(Ids2change).style = "border: 1px solid #000000;border-radius: 25px;" +
+			"width:"+(ImgSize-2).toString()+"px;";
 	}
 }
 
@@ -176,14 +188,16 @@ async function ImgClicked(Id) {
 	// Colour the boarders and end the trial (if we need to):
 	if (TrialType === 'Sup') {
 		if (!Correct) {
-			document.getElementById(Id).style = "border: 1px solid #ff0000;border-radius: 25px;width: 148px";
+			document.getElementById(Id).style = "border: 1px solid #ff0000;border-radius: 25px;" +
+				"width:"+(ImgSize-2).toString()+"px;";
 
 		} else {
 			// Set AcceptResponse to be false:
 			AcceptResponse = false;
 
 			// Set the current (correct) response to have a green border:
-			document.getElementById(Id).style = "border: 1px solid #00ff00;border-radius: 25px;width: 148px";
+			document.getElementById(Id).style = "border: 1px solid #00ff00;border-radius: 25px;" +
+				"width:"+(ImgSize-2).toString()+"px;";
 
 			// Set all other responses to have a black border:
 			BlackenBoarders(FieldIdx_Response);
@@ -199,7 +213,8 @@ async function ImgClicked(Id) {
 		AcceptResponse = false;
 
 		// Set the current (correct) response to have a green border:
-		document.getElementById(Id).style = "border: 1px solid #0000ff;border-radius: 25px;width: 148px";
+		document.getElementById(Id).style = "border: 1px solid #0000ff;border-radius: 25px;" +
+			"width:"+(ImgSize-2).toString()+"px;";
 
 		// Set all other responses to have a black border:
 		BlackenBoarders(FieldIdx_Response);
@@ -225,7 +240,17 @@ function RunTrialLoop() {
 // Specify the Promise chain
 async function PromiseChain() {
 	await GetSessionDef();
+
+	// Set the ImgSize and get the ArrayOfResponseTags
+	var ScreenHeight = window.screen.height;
+	var ScreenWidth = window.screen.width;
+	if (ScreenHeight > ScreenWidth) {
+		ImgSize = Img2ScreenRatio * ScreenWidth;
+	} else {
+		ImgSize = Img2ScreenRatio * ScreenHeight;
+	}
 	ArrayOfResponseTags = GetArrayOfResponseTags();
+
 	await GetTrainHist();
 	await SeedRng();
 	RunTrialLoop();
