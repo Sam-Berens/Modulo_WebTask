@@ -56,7 +56,7 @@ async function GetTrainHist() {
 
 // This function is called in the Response trial object stimulus function
 function GetFullQuestion() {
-	var HtmlString = '<table style="text-align:center;border:1px solid white;" align="center"><tbody><tr>' +
+	var HtmlString = '<table style="text-align:center;border:2px solid white;" align="center"><tbody><tr>' +
 		'<td><img src="' + CurrentQuestion.Fn_A + '" width="'+ ImgSize.toString() +'px;">' + '</td>' +
 		'<td><img src="' + CurrentQuestion.Fn_B + '" width="'+ ImgSize.toString() +'px;">' + '</td>' +
 		'<td><img src="' + CurrentQuestion.Fn_S + '" width="'+ ImgSize.toString() +'px;"></td>' +
@@ -66,7 +66,7 @@ function GetFullQuestion() {
 
 // OnMouseOver and OnMouseOut functions
 function OnMouseOver(Img) {
-	Img.width = ImgSize - 2;
+	Img.width = ImgSize - 4;
 }
 function OnMouseOut(Img) {
 	Img.width = ImgSize;
@@ -130,8 +130,8 @@ function BlackenBoarders(FIdxR) {
 	// Loop over those FieldIdxs:
 	for (var i = 0; i < Idxs.length; i++) {
 		var Ids2change = 'Resp_' + Idxs[i].toString().padStart(2, '0');
-			document.getElementById(Ids2change).style = "border: 1px solid #000000;border-radius: 25px;" +
-			"width:"+(ImgSize-2).toString()+"px;";
+			document.getElementById(Ids2change).style = "border: 2px solid #000000;border-radius: 25px;" +
+			"width:"+(ImgSize-4).toString()+"px;";
 	}
 }
 
@@ -188,16 +188,16 @@ async function ImgClicked(Id) {
 	// Colour the boarders and end the trial (if we need to):
 	if (TrialType === 'Sup') {
 		if (!Correct) {
-			document.getElementById(Id).style = "border: 1px solid #ff0000;border-radius: 25px;" +
-				"width:"+(ImgSize-2).toString()+"px;";
+			document.getElementById(Id).style = "border: 2px solid #ff0000;border-radius: 25px;" +
+				"width:"+(ImgSize-4).toString()+"px;";
 
 		} else {
 			// Set AcceptResponse to be false:
 			AcceptResponse = false;
 
 			// Set the current (correct) response to have a green border:
-			document.getElementById(Id).style = "border: 1px solid #00ff00;border-radius: 25px;" +
-				"width:"+(ImgSize-2).toString()+"px;";
+			document.getElementById(Id).style = "border: 2px solid #00ff00;border-radius: 25px;" +
+				"width:"+(ImgSize-4).toString()+"px;";
 
 			// Set all other responses to have a black border:
 			BlackenBoarders(FieldIdx_Response);
@@ -213,8 +213,8 @@ async function ImgClicked(Id) {
 		AcceptResponse = false;
 
 		// Set the current (correct) response to have a green border:
-		document.getElementById(Id).style = "border: 1px solid #0000ff;border-radius: 25px;" +
-			"width:"+(ImgSize-2).toString()+"px;";
+		document.getElementById(Id).style = "border: 2px solid #0000ff;border-radius: 25px;" +
+			"width:"+(ImgSize-4).toString()+"px;";
 
 		// Set all other responses to have a black border:
 		BlackenBoarders(FieldIdx_Response);
