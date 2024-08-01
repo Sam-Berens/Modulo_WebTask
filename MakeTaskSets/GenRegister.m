@@ -53,15 +53,14 @@ Register = repmat(struct(...
     'ImgPerm','',...
     'TaskSet',''),...
     nSubjects,1);
-ImgPerm = cell(nSubjects,1);
-TaskSet = cell(nSubjects,1);
 
 %% Loop through each subject to make their task set
-for iSubject = 1:nSubjects
+iSubject = 1;
+ConditionMet = false;
+while ~ConditionMet
     
     % Set the ImagePerms
     Perm = randperm(6)' -1;
-    ImgPerm{iSubject} = Perm;
     
     %% TaskSet for the set of 6
     nSup = numel(TaskSet06);
@@ -106,18 +105,35 @@ for iSubject = 1:nSubjects
         
     end
     
-    % Add the trial array to the list of full task sets
-    TaskSet{iSubject} = Trials;
-    
-    %% Add to the Register structure
-    Register(iSubject,1).ImgPerm = jsonencode(ImgPerm{iSubject});
-    Register(iSubject,1).TaskSet = jsonencode(TaskSet{iSubject});
+    %% Make JSON data
+    Json.ImgPerm = jsonencode(Perm);
+    Json.TaskSet = jsonencode(Trials);
     
     %% Generate a SubjectId
     TextToHash = [...
-        Register(iSubject,1).ImgPerm,...
-        Register(iSubject,1).TaskSet];
+        Json.ImgPerm,...
+        Json.TaskSet];
     Hash = mMD5(TextToHash);
-    Register(iSubject,1).SubjectId = Hash(end-7:end);
+    SubjectId = Hash(end-7:end);
+    
+    %% Add to the Register structure
+    if iSubject == 1
+        Register(iSubject,1).ImgPerm = Json.ImgPerm;
+        Register(iSubject,1).TaskSet = Json.TaskSet;
+        Register(iSubject,1).SubjectId = SubjectId;
+        iSubject = iSubject + 1;
+    elseif iSubject <= nSubjects
+        if ~ismember(SubjectId,{Register.SubjectId}')
+            Register(iSubject,1).ImgPerm = Json.ImgPerm;
+            Register(iSubject,1).TaskSet = Json.TaskSet;
+            Register(iSubject,1).SubjectId = SubjectId;
+            iSubject = iSubject + 1;
+        end
+        if iSubject == (nSubjects+1)
+            ConditionMet = true;
+        end
+    end
     
 end
+
+return
