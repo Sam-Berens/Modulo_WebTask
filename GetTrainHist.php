@@ -3,6 +3,8 @@ header('Content-Type: application/json');
 require __DIR__ . '/Credentials.php';
 
 // Connect to the database:
+$Servername = "localhost";
+$Dbname = "b01_DataStore";
 $Conn = new mysqli($Servername, $Username, $Password, $Dbname);
 if ($Conn->connect_error) {
     die("Connection failed: " . $Conn->connect_error);
