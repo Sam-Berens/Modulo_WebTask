@@ -249,6 +249,7 @@ async function PromiseChain() {
 	} else {
 		ImgSize = Img2ScreenRatio * ScreenHeight;
 	}
+	ImgSize = Math.floor(ImgSize);
 	ArrayOfResponseTags = GetArrayOfResponseTags();
 
 	await GetTrainHist();

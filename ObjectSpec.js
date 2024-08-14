@@ -62,7 +62,7 @@ var PreTrialOps = {
         var r = Rng();
         var SelectedId = Qcum.map((q)=>{return r<q}).indexOf(true);
 
-        // Update  global variables
+        // Update global variables
         CurrentQuestion = TaskSet[SelectedId];
         TrainHistory[SelectedId] = TrainHistory[SelectedId] + 1;
     }
