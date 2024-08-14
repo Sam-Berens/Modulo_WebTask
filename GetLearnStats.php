@@ -108,8 +108,20 @@ for ($iS = $MinSessionId; $iS <= $MaxSessionId; $iS++) {
 		}
 	}
 
+	// Compute the number of Sup trials in this session ($nT)...
+	// ... and stop this loop iteration if $nT == 0
+	$nT = sizeof($Trials);
+	if ($nT==0) {
+		array_push($Sessions, array());
+		array_push($NumTrials, 0);
+		array_push($Accuracy0, 0);
+		array_push($Accuracy1, 0);
+		array_push($Accuracy2, 0);
+		continue;
+	}
+
 	// Pad out the Accuracy stats so that they always have 3 elements
-	for ($iT = 0; $iT < sizeof($Trials); $iT++) {
+	for ($iT = 0; $iT < $nT; $iT++) {
 		$Trials[$iT]['Accuracy'] = array_pad($Trials[$iT]['Accuracy'], 3, 1);
 	}
 
@@ -117,7 +129,6 @@ for ($iS = $MinSessionId; $iS <= $MaxSessionId; $iS++) {
 	array_push($Sessions, $Trials);
 
 	// Record the number of trials in this session
-	$nT = sizeof($Trials);
 	array_push($NumTrials, $nT);
 
 	// Compute the mean accuracy for the first attempt
