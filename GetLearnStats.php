@@ -101,11 +101,15 @@ for ($iS = $MinSessionId; $iS <= $MaxSessionId; $iS++) {
 			// Else, if we are dealing with a different attempt number...
 			// ... adjust the last trail object in Trials
 		} elseif ($AttemptNum < 3) {
-			if (is_null($Trials[$iT])) {
-				error_log(json_encode($Trials));
-				error_log(json_encode($iT));
-				error_log(json_encode($AttemptNum));
-				error_log(json_encode($Attempt['DateTime_Write']));
+			// If we missed the first attempt in a session:
+			if ($iT < 0) {
+				$iT++;
+				$TrialObject = array(
+					'FieldIdx_C' => $C,
+					'FieldIdx_R' => array(NAN),
+					'Accuracy' => array(0)
+				);
+				array_push($Trials, $TrialObject);
 			}
 			array_push($Trials[$iT]['FieldIdx_R'], $R);
 			array_push($Trials[$iT]['Accuracy'], $Real);
