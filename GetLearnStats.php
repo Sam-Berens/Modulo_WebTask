@@ -105,6 +105,7 @@ for ($iS = $MinSessionId; $iS <= $MaxSessionId; $iS++) {
 				error_log(json_encode($Trials));
 				error_log(json_encode($iT));
 				error_log(json_encode($AttemptNum));
+				error_log(json_encode($Attempt['DateTime_Write']));
 			}
 			array_push($Trials[$iT]['FieldIdx_R'], $R);
 			array_push($Trials[$iT]['Accuracy'], $Real);
