@@ -103,6 +103,8 @@ for ($iS = $MinSessionId; $iS <= $MaxSessionId; $iS++) {
 		} elseif ($AttemptNum < 3) {
 			if (is_null($Trials[$iT])) {
 				error_log(json_encode($Trials));
+				error_log(json_encode($iT));
+				error_log(json_encode($AttemptNum));
 			}
 			array_push($Trials[$iT]['FieldIdx_R'], $R);
 			array_push($Trials[$iT]['Accuracy'], $Real);
