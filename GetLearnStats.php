@@ -89,7 +89,7 @@ for ($iS = $MinSessionId; $iS <= $MaxSessionId; $iS++) {
 
 		// If this is the first attempt, create a new trial object ...
 		// ... and push it onto the Trials array
-		if ($AttemptNum === 0) {
+		if ($AttemptNum == 0) {
 			$iT++;
 			$TrialObject = array(
 				'FieldIdx_C' => $C,
@@ -101,6 +101,9 @@ for ($iS = $MinSessionId; $iS <= $MaxSessionId; $iS++) {
 			// Else, if we are dealing with a different attempt number...
 			// ... adjust the last trail object in Trials
 		} elseif ($AttemptNum < 3) {
+			if (is_null($Trials[$iT])) {
+				error_log(json_encode($Trials));
+			}
 			array_push($Trials[$iT]['FieldIdx_R'], $R);
 			array_push($Trials[$iT]['Accuracy'], $Real);
 		}
