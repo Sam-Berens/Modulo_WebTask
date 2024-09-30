@@ -15,4 +15,3 @@ $Register = mysqli_fetch_all($Result,MYSQLI_ASSOC);
 
 $Conn->close();
 echo(json_encode($Register));
-?>
