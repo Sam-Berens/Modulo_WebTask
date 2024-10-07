@@ -65,6 +65,7 @@ $Sup['r1'] = array();
 $Sup['k1'] = array();
 $Sup['r2'] = array();
 $Sup['k2'] = array();
+$Sup['t'] = array();
 
 $Uns['SessionId'] = array();
 $Uns['SessionN'] = array();
@@ -74,6 +75,7 @@ $Uns['PairId'] = array();
 $Uns['c'] = array();
 $Uns['r'] = array();
 $Uns['k'] = array();
+$Uns['t'] = array();
 
 // Loop through each session (indexed by $iS)...
 // ... adding an array of trial objects to each element of Sessions;
@@ -85,7 +87,7 @@ for ($iSId = $MinSessionId; $iSId <= $MaxSessionId; $iSId++) {
     $Sql4 = "SELECT * FROM TaskIO WHERE 
 		SubjectId='$SubjectId' AND 
 		SessionId=$iSId AND 
-        TrialType='Sup'
+        TrialType='Sup' 
 		ORDER BY DateTime_Write ASC;";
     $Result = mysqli_query($Conn, $Sql4);
 
@@ -100,6 +102,7 @@ for ($iSId = $MinSessionId; $iSId <= $MaxSessionId; $iSId++) {
         $c = intval($Attempt['FieldIdx_C']);
         $r = intval($Attempt['FieldIdx_R']);
         $Correct = intval($Attempt['Correct']);
+        $t = date($Attempt['DateTime_Write']);
 
         // If this is the first attempt...
         if ($AttemptNum === 0) {
@@ -116,6 +119,7 @@ for ($iSId = $MinSessionId; $iSId <= $MaxSessionId; $iSId++) {
             array_push($Sup['k1'], 1);
             array_push($Sup['r2'], $c);
             array_push($Sup['k2'], 1);
+            array_push($Sup['t'], $t); 
 
         } elseif ($AttemptNum == 1) {
             $Sup['r1'][count($Sup['r1']) - 1] = $r;
@@ -148,6 +152,8 @@ for ($iSId = $MinSessionId; $iSId <= $MaxSessionId; $iSId++) {
         $c = intval($Attempt['FieldIdx_C']);
         $r = intval($Attempt['FieldIdx_R']);
         $Correct = intval($Attempt['Correct']);
+        $t = date($Attempt['DateTime_Write']);
+
 
         // If this is the first attempt...
         if ($AttemptNum === 0) {
@@ -160,6 +166,7 @@ for ($iSId = $MinSessionId; $iSId <= $MaxSessionId; $iSId++) {
             array_push($Uns['c'], $c);
             array_push($Uns['r'], $r);
             array_push($Uns['k'], $Correct);
+            array_push($Uns['t'], $t);
         }
 
     }
