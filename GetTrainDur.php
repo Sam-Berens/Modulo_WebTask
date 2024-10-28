@@ -18,10 +18,13 @@ $SubjectId = $Input['SubjectId'];
 $SubjectId = mysqli_real_escape_string($Conn, $SubjectId);
 
 //Get the train time:
-$Sql = "SELECT SUM(RT)/3600000 FROM `TaskIO` WHERE SubjectId='$SubjectId' AND Correct=1;";
-$Result = mysqli_query($Conn,$Sql);
-$TrainDur = mysqli_fetch_assoc($Result);
-$TrainDur = $TrainDur['SUM(RT)/3600000'];
+$Sql1 = "SELECT SUM(RT)/3600000 FROM `TaskIO` WHERE SubjectId='$SubjectId' AND TrialType='Sup' AND Correct=1;";
+$Sql2 = "SELECT COUNT(AttemptId) FROM `TaskIO` WHERE SubjectId='$SubjectId' AND TrialType='Sup' AND Correct=1;";
+$Result1 = mysqli_query($Conn,$Sql1);
+$ThinkingTime = mysqli_fetch_assoc($Result1);
+$Result2 = mysqli_query($Conn,$Sql2);
+$SupCount = mysqli_fetch_assoc($Result2);
+$TrainDur = $ThinkingTime['SUM(RT)/3600000'] + $SupCount['COUNT(AttemptId)']*(5/3600);
 
 // Close connection to database:
 $Conn->close();
